@@ -5,11 +5,11 @@ class SessionControl extends React.Component {
         <div id="control">
           <div id="break-label">Break Length</div>
           <div className="d-flex flex-nowrap">
-            <div id="break-decrement">
+            <div id="break-decrement" onClick={() => { this.props.changeLen("break", "negative") }}>
               <i class="fa-solid fa-caret-down"></i>
             </div>
             <div id="break-duration">{this.props.breakLen}</div>
-            <div id="break-increment">
+            <div id="break-increment" onClick={() => { this.props.changeLen("break", "positive") }}>
               <i class="fa-solid fa-caret-up"></i>
             </div>
           </div>
@@ -17,11 +17,11 @@ class SessionControl extends React.Component {
         <div id="control">
           <div id="session-label">Session Length</div>
           <div className="d-flex flex-nowrap">
-            <div id="session-decrement">
+            <div id="session-decrement" onClick={() => { this.props.changeLen("session", "negative") }}>
               <i class="fa-solid fa-caret-down"></i>
             </div>
             <div id="session-duration">{this.props.sessionLen}</div>
-            <div id="session-increment">
+            <div id="session-increment" onClick={() => { this.props.changeLen("session", "positive") }}>
               <i class="fa-solid fa-caret-up"></i>
             </div>
           </div>
@@ -64,6 +64,7 @@ class App extends React.Component {
       sessionStatus: "paused"
     };
     this.parseSeconds = this.parseSeconds.bind(this);
+    this.changeLen = this.changeLen.bind(this);
     /*this.handleOperator = this.handleOperator.bind(this);*/
   }
 
@@ -85,20 +86,55 @@ class App extends React.Component {
     this.setState({ secondsLeft: this.parseSeconds() });
   }
 
-  render() {
-    return (
-      <div>
-        <SessionControl
-          breakLen={this.state.breakLen}
-          sessionLen={this.state.sessionLen}
-        />
-        <SessionTimer
-          secondsLeft={this.state.secondsLeft}
-          parseSeconds={this.parseSeconds}
-        />
-      </div>
-    );
+  changeLen(element, sign) {
+    console.log(element, sign)
+    if (this.state.sessionStatus == "paused") {
+      if (element === "break") {
+        if (this.state.breakLen <= 59) {
+          if (sign === "positive") {
+            this.setState({ breakLen: this.state.breakLen + 1 });
+          }
+        }
+        if (this.state.breakLen > 1) {
+          if (sign === "negative") {
+            this.setState({ breakLen: this.state.breakLen - 1 });
+          }
+        }
+      }
+      else if (element === "session") {
+        if (this.state.sessionLen <= 59) {
+          if (sign === "positive") {
+            this.setState({ sessionLen: this.state.sessionLen + 1 });
+          }
+        }
+        if (this.state.sessionLen > 1) {
+          if (sign === "negative") {
+            this.setState({ sessionLen: this.state.sessionLen - 1 });
+          }
+        }
+      }
+    }
   }
+
+  changeStatus() {
+
+  }
+
+render() {
+  return (
+    <div>
+      <SessionControl
+        breakLen={this.state.breakLen}
+        sessionLen={this.state.sessionLen}
+        changeLen={this.changeLen}
+      />
+      <SessionTimer
+        secondsLeft={this.state.secondsLeft}
+        parseSeconds={this.parseSeconds}
+      />
+    </div>
+  );
+}
 }
 
 ReactDOM.render(<App />, document.getElementById("app"));
