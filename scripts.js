@@ -60,6 +60,7 @@ class SessionTimer extends React.Component {
         <div id="timer">
           <div id="timer-label">{this.props.type}</div>
           <div id="time-left">{this.props.parseSeconds()}</div>
+          <audio id="beep" src="./resources/boxing-bell.wav"></audio>
           <div id="timer-control">
             <div id="start_stop" onClick={this.props.changeStatus}>
               <i class="fa-solid fa-play"></i>
@@ -184,15 +185,26 @@ class App extends React.Component {
 
   changeTimeLeft() {
     //console.log(this.state);
-    if (this.state.secondsLeft > 0) {
+    const beep = document.getElementById("beep");
+    if (this.state.secondsLeft !== 0) {
       this.decrementSeconds();
     } else {
       if (this.state.type === "Work") {
+        beep.play();
+        window.setTimeout(function () {
+          beep.pause();
+          beep.currentTime = 0;
+        }, 3000);
         this.setState({
           type: "Break",
           secondsLeft: this.state.breakLen * 60
         });
       } else if (this.state.type === "Break") {
+        beep.play();
+        window.setTimeout(function () {
+          beep.pause();
+          beep.currentTime = 0;
+        }, 3000);
         this.setState({
           type: "Work",
           secondsLeft: this.state.sessionLen * 60
