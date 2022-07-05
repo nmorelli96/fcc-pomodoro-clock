@@ -7,11 +7,21 @@ class SessionControl extends React.Component {
         <div id="control">
           <div id="break-label">Break Length</div>
           <div className="d-flex flex-nowrap">
-            <div id="break-decrement" onClick={() => { this.props.changeLen("break", "negative") }}>
+            <div
+              id="break-decrement"
+              onClick={() => {
+                this.props.changeLen("break", "negative");
+              }}
+            >
               <i class="fa-solid fa-caret-down"></i>
             </div>
-            <div id="break-duration">{this.props.breakLen}</div>
-            <div id="break-increment" onClick={() => { this.props.changeLen("break", "positive") }}>
+            <div id="break-length">{this.props.breakLen}</div>
+            <div
+              id="break-increment"
+              onClick={() => {
+                this.props.changeLen("break", "positive");
+              }}
+            >
               <i class="fa-solid fa-caret-up"></i>
             </div>
           </div>
@@ -19,11 +29,21 @@ class SessionControl extends React.Component {
         <div id="control">
           <div id="session-label">Work Length</div>
           <div className="d-flex flex-nowrap">
-            <div id="session-decrement" onClick={() => { this.props.changeLen("session", "negative") }}>
+            <div
+              id="session-decrement"
+              onClick={() => {
+                this.props.changeLen("session", "negative");
+              }}
+            >
               <i class="fa-solid fa-caret-down"></i>
             </div>
-            <div id="session-duration">{this.props.sessionLen}</div>
-            <div id="session-increment" onClick={() => { this.props.changeLen("session", "positive") }}>
+            <div id="session-length">{this.props.sessionLen}</div>
+            <div
+              id="session-increment"
+              onClick={() => {
+                this.props.changeLen("session", "positive");
+              }}
+            >
               <i class="fa-solid fa-caret-up"></i>
             </div>
           </div>
@@ -41,11 +61,11 @@ class SessionTimer extends React.Component {
           <div id="timer-label">{this.props.type}</div>
           <div id="time-left">{this.props.parseSeconds()}</div>
           <div id="timer-control">
-            <div id="start-stop">
-              <i class="fa-solid fa-play" onClick={this.props.changeStatus}></i>
-              <i class="fa-solid fa-pause" onClick={this.props.changeStatus}></i>
+            <div id="start_stop" onClick={this.props.changeStatus}>
+              <i class="fa-solid fa-play"></i>
+              <i class="fa-solid fa-pause"></i>
             </div>
-            <div id="reset">
+            <div id="reset" onClick={this.props.reset}>
               <i class="fa-solid fa-clock-rotate-left"></i>
             </div>
           </div>
@@ -71,6 +91,7 @@ class App extends React.Component {
     this.changeLen = this.changeLen.bind(this);
     this.changeStatus = this.changeStatus.bind(this);
     this.decrementSeconds = this.decrementSeconds.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
   /*componentDidMount() {
@@ -79,38 +100,71 @@ class App extends React.Component {
   }*/
 
   changeLen(element, sign) {
-    if (this.state.sessionStatus == "paused") {
+    if (this.state.sessionStatus === "paused") {
       if (element === "break") {
         if (this.state.breakLen <= 59) {
           if (sign === "positive") {
-            this.setState({
-              breakLen: this.state.breakLen + 1
-            });
+            let incrementedBreak = this.state.breakLen + 1;
+            let newBreakSeconds = incrementedBreak * 60;
+            if (this.state.type === "Break") {
+              this.setState({
+                breakLen: incrementedBreak,
+                secondsLeft: newBreakSeconds
+              });
+            } else if (this.state.type === "Work") {
+              this.setState({
+                breakLen: incrementedBreak
+              });
+            }
           }
         }
         if (this.state.breakLen > 1) {
           if (sign === "negative") {
-            this.setState({
-              breakLen: this.state.breakLen - 1
-            });
+            let decrementedBreak = this.state.breakLen - 1;
+            let newBreakSeconds = decrementedBreak * 60;
+            if (this.state.type === "Break") {
+              this.setState({
+                breakLen: decrementedBreak,
+                secondsLeft: newBreakSeconds
+              });
+            } else if (this.state.type === "Work") {
+              this.setState({
+                breakLen: decrementedBreak
+              });
+            }
           }
         }
-      }
-      else if (element === "session") {
+      } else if (element === "session") {
         if (this.state.sessionLen <= 59) {
           if (sign === "positive") {
-            this.setState({
-              sessionLen: this.state.sessionLen + 1,
-              secondsLeft: this.state.secondsLeft + 60
-            });
+            let incrementedSession = this.state.sessionLen + 1;
+            let newSessionSeconds = incrementedSession * 60;
+            if (this.state.type === "Work") {
+              this.setState({
+                sessionLen: incrementedSession,
+                secondsLeft: newSessionSeconds
+              });
+            } else if (this.state.type === "Break") {
+              this.setState({
+                sessionLen: incrementedSession
+              });
+            }
           }
         }
         if (this.state.sessionLen > 1) {
           if (sign === "negative") {
-            this.setState({
-              sessionLen: this.state.sessionLen - 1,
-              secondsLeft: this.state.secondsLeft - 60
-            });
+            let decrementedSession = this.state.sessionLen - 1;
+            let newSessionSeconds = decrementedSession * 60;
+            if (this.state.type === "Work") {
+              this.setState({
+                sessionLen: decrementedSession,
+                secondsLeft: newSessionSeconds
+              });
+            } else if (this.state.type === "Break") {
+              this.setState({
+                sessionLen: decrementedSession
+              });
+            }
           }
         }
       }
@@ -130,19 +184,43 @@ class App extends React.Component {
 
   changeTimeLeft() {
     //console.log(this.state);
-    this.decrementSeconds();
+    if (this.state.secondsLeft > 0) {
+      this.decrementSeconds();
+    } else {
+      if (this.state.type === "Work") {
+        this.setState({
+          type: "Break",
+          secondsLeft: this.state.breakLen * 60
+        });
+      } else if (this.state.type === "Break") {
+        this.setState({
+          type: "Work",
+          secondsLeft: this.state.sessionLen * 60
+        });
+      }
+    }
   }
 
   changeStatus() {
-    if (this.state.sessionStatus == "paused") {
+    if (this.state.sessionStatus === "paused") {
       this.setState({ sessionStatus: "running" });
       interval = setInterval(this.changeTimeLeft, 1000);
-    }
-    else if (this.state.sessionStatus == "running") {
+    } else if (this.state.sessionStatus === "running") {
       this.setState({ sessionStatus: "paused" });
       clearInterval(interval);
       console.log(interval);
     }
+  }
+
+  reset() {
+    clearInterval(interval);
+    this.setState({
+      breakLen: 5,
+      sessionLen: 25,
+      secondsLeft: 1500,
+      type: "Work",
+      sessionStatus: "paused"
+    });
   }
 
   render() {
@@ -156,6 +234,7 @@ class App extends React.Component {
         <SessionTimer
           parseSeconds={this.parseSeconds}
           changeStatus={this.changeStatus}
+          reset={this.reset}
           type={this.state.type}
         />
       </div>
