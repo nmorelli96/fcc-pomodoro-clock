@@ -17,7 +17,7 @@ class SessionControl extends React.Component {
           </div>
         </div>
         <div id="control">
-          <div id="session-label">Session Length</div>
+          <div id="session-label">Work Length</div>
           <div className="d-flex flex-nowrap">
             <div id="session-decrement" onClick={() => { this.props.changeLen("session", "negative") }}>
               <i class="fa-solid fa-caret-down"></i>
@@ -38,8 +38,8 @@ class SessionTimer extends React.Component {
     return (
       <div>
         <div id="timer">
-          <div id="timer-label">Session</div>
-          <div id="time-left">{this.props.clock}</div>
+          <div id="timer-label">{this.props.type}</div>
+          <div id="time-left">{this.props.parseSeconds()}</div>
           <div id="timer-control">
             <div id="start-stop">
               <i class="fa-solid fa-play" onClick={this.props.changeStatus}></i>
@@ -63,7 +63,7 @@ class App extends React.Component {
       breakLen: 5,
       sessionLen: 25,
       secondsLeft: 1500,
-      clock: "",
+      type: "Work",
       sessionStatus: "paused"
     };
     this.parseSeconds = this.parseSeconds.bind(this);
@@ -73,36 +73,44 @@ class App extends React.Component {
     this.decrementSeconds = this.decrementSeconds.bind(this);
   }
 
-  componentDidMount() {
-    this.parseSeconds();
-  }
+  /*componentDidMount() {
+  }*/
   /*componentWillUnmount() {
   }*/
 
   changeLen(element, sign) {
-    console.log(element, sign)
     if (this.state.sessionStatus == "paused") {
       if (element === "break") {
         if (this.state.breakLen <= 59) {
           if (sign === "positive") {
-            this.setState({ breakLen: this.state.breakLen + 1 });
+            this.setState({
+              breakLen: this.state.breakLen + 1
+            });
           }
         }
         if (this.state.breakLen > 1) {
           if (sign === "negative") {
-            this.setState({ breakLen: this.state.breakLen - 1 });
+            this.setState({
+              breakLen: this.state.breakLen - 1
+            });
           }
         }
       }
       else if (element === "session") {
         if (this.state.sessionLen <= 59) {
           if (sign === "positive") {
-            this.setState({ sessionLen: this.state.sessionLen + 1 });
+            this.setState({
+              sessionLen: this.state.sessionLen + 1,
+              secondsLeft: this.state.secondsLeft + 60
+            });
           }
         }
         if (this.state.sessionLen > 1) {
           if (sign === "negative") {
-            this.setState({ sessionLen: this.state.sessionLen - 1 });
+            this.setState({
+              sessionLen: this.state.sessionLen - 1,
+              secondsLeft: this.state.secondsLeft - 60
+            });
           }
         }
       }
@@ -117,13 +125,12 @@ class App extends React.Component {
     secondsLeft = this.state.secondsLeft;
     let minutes = Math.trunc(secondsLeft / 60);
     let seconds = (secondsLeft % 60).toString().padStart(2, "0");
-    this.setState({ clock: `${minutes}:${seconds}` })
+    return `${minutes}:${seconds}`;
   }
 
   changeTimeLeft() {
-    console.log(this.state);
+    //console.log(this.state);
     this.decrementSeconds();
-    this.parseSeconds();
   }
 
   changeStatus() {
@@ -147,10 +154,9 @@ class App extends React.Component {
           changeLen={this.changeLen}
         />
         <SessionTimer
-          secondsLeft={this.state.secondsLeft}
-          clock={this.state.clock}
           parseSeconds={this.parseSeconds}
           changeStatus={this.changeStatus}
+          type={this.state.type}
         />
       </div>
     );
