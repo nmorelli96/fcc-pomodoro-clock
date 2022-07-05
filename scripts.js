@@ -178,7 +178,7 @@ class App extends React.Component {
 
   parseSeconds(secondsLeft) {
     secondsLeft = this.state.secondsLeft;
-    let minutes = Math.trunc(secondsLeft / 60);
+    let minutes = Math.trunc(secondsLeft / 60).toString().padStart(2, "0");
     let seconds = (secondsLeft % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   }
@@ -190,25 +190,22 @@ class App extends React.Component {
       this.decrementSeconds();
     } else {
       if (this.state.type === "Work") {
+        this.changeStatus();
+        console.log(this.state);
         beep.play();
-        window.setTimeout(function () {
-          beep.pause();
-          beep.currentTime = 0;
-        }, 3000);
         this.setState({
           type: "Break",
           secondsLeft: this.state.breakLen * 60
         });
+        this.changeStatus();
       } else if (this.state.type === "Break") {
+        this.changeStatus();
         beep.play();
-        window.setTimeout(function () {
-          beep.pause();
-          beep.currentTime = 0;
-        }, 3000);
         this.setState({
           type: "Work",
           secondsLeft: this.state.sessionLen * 60
         });
+        this.changeStatus()
       }
     }
   }
