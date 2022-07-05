@@ -1,3 +1,5 @@
+let interval = 0;
+
 class SessionControl extends React.Component {
   render() {
     return (
@@ -37,11 +39,11 @@ class SessionTimer extends React.Component {
       <div>
         <div id="timer">
           <div id="timer-label">Session</div>
-          <div id="time-left">{this.props.secondsLeft}</div>
+          <div id="time-left">{this.props.clock}</div>
           <div id="timer-control">
             <div id="start-stop">
-              <i class="fa-solid fa-play"></i>
-              <i class="fa-solid fa-pause"></i>
+              <i class="fa-solid fa-play" onClick={this.props.changeStatus}></i>
+              <i class="fa-solid fa-pause" onClick={this.props.changeStatus}></i>
             </div>
             <div id="reset">
               <i class="fa-solid fa-clock-rotate-left"></i>
@@ -61,30 +63,21 @@ class App extends React.Component {
       breakLen: 5,
       sessionLen: 25,
       secondsLeft: 1500,
+      clock: "",
       sessionStatus: "paused"
     };
     this.parseSeconds = this.parseSeconds.bind(this);
+    this.changeTimeLeft = this.changeTimeLeft.bind(this);
     this.changeLen = this.changeLen.bind(this);
-    /*this.handleOperator = this.handleOperator.bind(this);*/
+    this.changeStatus = this.changeStatus.bind(this);
+    this.decrementSeconds = this.decrementSeconds.bind(this);
   }
 
   componentDidMount() {
-    this.time = setInterval(this.changeTimeLeft(), 1000);
+    this.parseSeconds();
   }
-  componentWillUnmount() {
-    clearInterval(this.time);
-  }
-
-  parseSeconds(secondsLeft) {
-    secondsLeft = this.state.secondsLeft;
-    let minutes = Math.trunc(secondsLeft / 60);
-    let seconds = (secondsLeft % 60).toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  }
-
-  changeTimeLeft() {
-    this.setState({ secondsLeft: this.parseSeconds() });
-  }
+  /*componentWillUnmount() {
+  }*/
 
   changeLen(element, sign) {
     console.log(element, sign)
@@ -116,25 +109,52 @@ class App extends React.Component {
     }
   }
 
-  changeStatus() {
-
+  decrementSeconds() {
+    this.setState({ secondsLeft: this.state.secondsLeft - 1 });
   }
 
-render() {
-  return (
-    <div>
-      <SessionControl
-        breakLen={this.state.breakLen}
-        sessionLen={this.state.sessionLen}
-        changeLen={this.changeLen}
-      />
-      <SessionTimer
-        secondsLeft={this.state.secondsLeft}
-        parseSeconds={this.parseSeconds}
-      />
-    </div>
-  );
-}
+  parseSeconds(secondsLeft) {
+    secondsLeft = this.state.secondsLeft;
+    let minutes = Math.trunc(secondsLeft / 60);
+    let seconds = (secondsLeft % 60).toString().padStart(2, "0");
+    this.setState({ clock: `${minutes}:${seconds}` })
+  }
+
+  changeTimeLeft() {
+    console.log(this.state);
+    this.decrementSeconds();
+    this.parseSeconds();
+  }
+
+  changeStatus() {
+    if (this.state.sessionStatus == "paused") {
+      this.setState({ sessionStatus: "running" });
+      interval = setInterval(this.changeTimeLeft, 1000);
+    }
+    else if (this.state.sessionStatus == "running") {
+      this.setState({ sessionStatus: "paused" });
+      clearInterval(interval);
+      console.log(interval);
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <SessionControl
+          breakLen={this.state.breakLen}
+          sessionLen={this.state.sessionLen}
+          changeLen={this.changeLen}
+        />
+        <SessionTimer
+          secondsLeft={this.state.secondsLeft}
+          clock={this.state.clock}
+          parseSeconds={this.parseSeconds}
+          changeStatus={this.changeStatus}
+        />
+      </div>
+    );
+  }
 }
 
 ReactDOM.render(<App />, document.getElementById("app"));
