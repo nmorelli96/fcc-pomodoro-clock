@@ -226,6 +226,8 @@ class App extends React.Component {
 
   reset() {
     clearInterval(interval);
+    beep.pause();
+    beep.currentTime = 0;
     this.setState({
       breakLen: 5,
       sessionLen: 25,
