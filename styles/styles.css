@@ -33,6 +33,9 @@ body::before {
   color: crimson;
   font-size: 2.2rem;
 }
+.navbar a:hover {
+  color: crimson;
+}
 .navbar img {
   height: 40px;
   margin-right: 10px;
