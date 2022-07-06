@@ -4,7 +4,7 @@ class Header extends React.Component {
   render() {
     return (
       <nav className="unselectable navbar justify-content-center align-content-center">
-        <a className="navbar-brand d-flex" href="#"><img src="./resources/tomato.png" />Pomodoro Clock</a>
+        <a className="navbar-brand d-flex" href="#"><img src="./resources/tomato.png" />Pomodoro Timer</a>
       </nav>
     )
   }
@@ -105,7 +105,7 @@ class SessionTimer extends React.Component {
             {this.props.type}
           </div>
           <div id="time-left"
-            className="d-flex justify-content-center align-content-center">
+            className="text-center d-flex justify-content-center align-content-center">
             {this.props.parseSeconds()}
           </div>
           <audio id="beep" src="./resources/mixkit-fairy-bells-583.wav"></audio>
