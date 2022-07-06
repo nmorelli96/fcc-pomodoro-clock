@@ -1,50 +1,90 @@
 let interval = 0;
 
+class Header extends React.Component {
+  render() {
+    return (
+      <nav className="unselectable navbar justify-content-center align-content-center">
+        <a className="navbar-brand d-flex" href="#"><img src="./resources/tomato.png" />Pomodoro Clock</a>
+      </nav>
+    )
+  }
+}
+
+class Footer extends React.Component {
+  render() {
+    return (
+      <footer className="unselectable d-flex flex-nowrap align-content-center justify-content-center">
+        Based on the &nbsp;
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.freecodecamp.org/learn/front-end-development-libraries/"
+        >
+          FCC course
+        </a>
+        &nbsp; by &nbsp;
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/nmorelli96/"
+        >
+          nmorelli96 &nbsp;
+        </a>
+      </footer>
+    )
+  }
+}
+
 class SessionControl extends React.Component {
   render() {
     return (
-      <div>
-        <div id="control">
-          <div id="break-label">Break Length</div>
-          <div className="d-flex flex-nowrap">
+      <div id="control-container"
+        className="unselectable d-flex justify-content-center align-content-center">
+        <div id="control"
+          className="d-flex flex-column justify-content-center align-content-center">
+          <div id="break-label"
+            className="text-center d-flex flex-nowrap justify-content-center align-content-center">
+            Break Length
+          </div>
+          <div className="d-flex flex-nowrap justify-content-center align-content-center">
             <div
               id="break-decrement"
               onClick={() => {
                 this.props.changeLen("break", "negative");
-              }}
-            >
-              <i class="fa-solid fa-caret-down"></i>
+              }}>
+              <i class="fa-solid fa-caret-down fa-2x"></i>
             </div>
             <div id="break-length">{this.props.breakLen}</div>
             <div
               id="break-increment"
               onClick={() => {
                 this.props.changeLen("break", "positive");
-              }}
-            >
-              <i class="fa-solid fa-caret-up"></i>
+              }}>
+              <i class="fa-solid fa-caret-up fa-2x"></i>
             </div>
           </div>
         </div>
-        <div id="control">
-          <div id="session-label">Work Length</div>
-          <div className="d-flex flex-nowrap">
+        <div id="control"
+          className="d-flex flex-column justify-content-center align-content-center">
+          <div id="session-label"
+            className="text-center d-flex flex-nowrap justify-content-center align-content-center">
+            Work Length
+          </div>
+          <div className="d-flex flex-nowrap justify-content-center align-content-center">
             <div
               id="session-decrement"
               onClick={() => {
                 this.props.changeLen("session", "negative");
-              }}
-            >
-              <i class="fa-solid fa-caret-down"></i>
+              }}>
+              <i class="fa-solid fa-caret-down fa-2x"></i>
             </div>
             <div id="session-length">{this.props.sessionLen}</div>
             <div
               id="session-increment"
               onClick={() => {
                 this.props.changeLen("session", "positive");
-              }}
-            >
-              <i class="fa-solid fa-caret-up"></i>
+              }}>
+              <i class="fa-solid fa-caret-up fa-2x"></i>
             </div>
           </div>
         </div>
@@ -56,18 +96,28 @@ class SessionControl extends React.Component {
 class SessionTimer extends React.Component {
   render() {
     return (
-      <div>
-        <div id="timer">
-          <div id="timer-label">{this.props.type}</div>
-          <div id="time-left">{this.props.parseSeconds()}</div>
-          <audio id="beep" src="./resources/boxing-bell.wav"></audio>
-          <div id="timer-control">
+      <div id="timer-container"
+        className="unselectable d-flex justify-content-center align-content-center">
+        <div id="timer"
+          className="d-flex flex-column justify-content-center align-content-center">
+          <div id="timer-label"
+            className="d-flex justify-content-center align-content-center">
+            {this.props.type}
+          </div>
+          <div id="time-left"
+            className="d-flex justify-content-center align-content-center">
+            {this.props.parseSeconds()}
+          </div>
+          <audio id="beep" src="./resources/mixkit-fairy-bells-583.wav"></audio>
+          <div id="timer-control"
+            className="d-flex justify-content-center align-content-center">
             <div id="start_stop" onClick={this.props.changeStatus}>
-              <i class="fa-solid fa-play"></i>
-              <i class="fa-solid fa-pause"></i>
+              <i class="fa-solid fa-play fa-3x"
+                style={{ display: this.props.status === "paused" ? 'block' : 'none' }}></i>
+              <i class="fa-solid fa-pause fa-3x" style={{ display: this.props.status === "running" ? 'block' : 'none' }}></i>
             </div>
             <div id="reset" onClick={this.props.reset}>
-              <i class="fa-solid fa-clock-rotate-left"></i>
+              <i class="fa-solid fa-clock-rotate-left fa-3x"></i>
             </div>
           </div>
         </div>
@@ -236,7 +286,8 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
+      <div id="app-container">
+        <Header />
         <SessionControl
           breakLen={this.state.breakLen}
           sessionLen={this.state.sessionLen}
@@ -247,7 +298,9 @@ class App extends React.Component {
           changeStatus={this.changeStatus}
           reset={this.reset}
           type={this.state.type}
+          status={this.state.sessionStatus}
         />
+        <Footer />
       </div>
     );
   }
